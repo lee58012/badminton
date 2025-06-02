@@ -111,19 +111,25 @@ class _MapPageState extends State<MapPage> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: Text(gym['name']),
+            title: Text(gym['name'], style: TextStyle(fontFamily: 'Maple_L')),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('주소: ${gym['address']}'),
-                Text('전화번호: ${gym['phone']}'),
+                Text(
+                  '주소: ${gym['address']}',
+                  style: TextStyle(fontFamily: 'Maple_L'),
+                ),
+                Text(
+                  '전화번호: ${gym['phone']}',
+                  style: TextStyle(fontFamily: 'Maple_L'),
+                ),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text('닫기'),
+                child: Text('닫기', style: TextStyle(fontFamily: 'Maple_L')),
               ),
             ],
           ),
@@ -138,7 +144,10 @@ class _MapPageState extends State<MapPage> {
           return Container(
             height: 200,
             alignment: Alignment.center,
-            child: Text('근처 배드민턴장이 없습니다.'),
+            child: Text(
+              '근처 배드민턴장이 없습니다.',
+              style: TextStyle(fontFamily: 'Maple_L'),
+            ),
           );
         }
         return ListView.builder(
@@ -147,12 +156,18 @@ class _MapPageState extends State<MapPage> {
             final gym = _gymList[index];
             return ListTile(
               leading: Icon(Icons.sports_tennis, color: Colors.red),
-              title: Text(gym['name']),
+              title: Text(gym['name'], style: TextStyle(fontFamily: 'Maple_L')),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('주소: ${gym['address']}'),
-                  Text('전화번호: ${gym['phone']}'),
+                  Text(
+                    '주소: ${gym['address']}',
+                    style: TextStyle(fontFamily: 'Maple_L'),
+                  ),
+                  Text(
+                    '전화번호: ${gym['phone']}',
+                    style: TextStyle(fontFamily: 'Maple_L'),
+                  ),
                 ],
               ),
               onTap: () {
@@ -170,7 +185,14 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('카카오 맵')),
+      appBar: AppBar(
+        title: Text(
+          '근처 배드민턴장',
+          style: TextStyle(fontFamily: 'Maple_L', color: Colors.white),
+        ),
+        backgroundColor: Colors.black,
+        iconTheme: IconThemeData(color: Colors.white),
+      ),
       body: Stack(
         children: [
           KakaoMap(
@@ -198,7 +220,7 @@ class _MapPageState extends State<MapPage> {
                 ),
               ),
               icon: Icon(Icons.list),
-              label: Text('배드민턴장 리스트'),
+              label: Text('배드민턴장 리스트', style: TextStyle(fontFamily: 'Maple_L')),
               onPressed: _showGymList,
             ),
           ),
