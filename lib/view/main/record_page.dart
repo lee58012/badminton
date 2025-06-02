@@ -107,9 +107,14 @@ class _RecordPageState extends State<RecordPage> {
       } else {
         print('사용자의 그룹 ID가 없습니다. 그룹에 먼저 가입해주세요.');
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('그룹에 가입 후 이용해주세요.')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                '그룹에 가입 후 이용해주세요.',
+                style: TextStyle(fontFamily: 'Maple_L'),
+              ),
+            ),
+          );
         }
       }
     } catch (e) {
@@ -202,16 +207,28 @@ class _RecordPageState extends State<RecordPage> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('경기 초기화'),
-            content: const Text('현재 진행 중인 경기를 초기화하시겠습니까?'),
+            title: const Text(
+              '경기 초기화',
+              style: TextStyle(fontFamily: 'Maple_L'),
+            ),
+            content: const Text(
+              '현재 진행 중인 경기를 초기화하시겠습니까?',
+              style: TextStyle(fontFamily: 'Maple_L'),
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('취소'),
+                child: const Text(
+                  '취소',
+                  style: TextStyle(fontFamily: 'Maple_L'),
+                ),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('확인'),
+                child: const Text(
+                  '확인',
+                  style: TextStyle(fontFamily: 'Maple_L'),
+                ),
               ),
             ],
           ),
@@ -250,9 +267,14 @@ class _RecordPageState extends State<RecordPage> {
     } catch (e) {
       print('Error ending match: $e');
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('경기 종료 중 오류가 발생했습니다: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '경기 종료 중 오류가 발생했습니다: $e',
+              style: TextStyle(fontFamily: 'Maple_L'),
+            ),
+          ),
+        );
       }
     }
   }
@@ -264,23 +286,35 @@ class _RecordPageState extends State<RecordPage> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('경기 종료'),
+            title: const Text('경기 종료', style: TextStyle(fontFamily: 'Maple_L')),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('최종 스코어: $player1Score - $player2Score'),
+                Text(
+                  '최종 스코어: $player1Score - $player2Score',
+                  style: TextStyle(fontFamily: 'Maple_L'),
+                ),
                 const SizedBox(height: 16),
-                const Text('무승부로 처리하시겠습니까?'),
+                const Text(
+                  '무승부로 처리하시겠습니까?',
+                  style: TextStyle(fontFamily: 'Maple_L'),
+                ),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('무승부'),
+                child: const Text(
+                  '무승부',
+                  style: TextStyle(fontFamily: 'Maple_L'),
+                ),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('재경기'),
+                child: const Text(
+                  '재경기',
+                  style: TextStyle(fontFamily: 'Maple_L'),
+                ),
               ),
             ],
           ),
@@ -362,7 +396,10 @@ class _RecordPageState extends State<RecordPage> {
           (context) => WillPopScope(
             onWillPop: () async => false,
             child: AlertDialog(
-              title: const Text('경기 종료'),
+              title: const Text(
+                '경기 종료',
+                style: TextStyle(fontFamily: 'Maple_L'),
+              ),
               content: Text(resultMessage),
               actions: [
                 TextButton(
@@ -379,7 +416,10 @@ class _RecordPageState extends State<RecordPage> {
                       });
                     }
                   },
-                  child: const Text('확인'),
+                  child: const Text(
+                    '확인',
+                    style: TextStyle(fontFamily: 'Maple_L'),
+                  ),
                 ),
               ],
             ),
@@ -443,9 +483,14 @@ class _RecordPageState extends State<RecordPage> {
     } catch (e) {
       print('Error updating player stats: $e');
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('통계 업데이트 중 오류가 발생했습니다: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '통계 업데이트 중 오류가 발생했습니다: $e',
+              style: TextStyle(fontFamily: 'Maple_L'),
+            ),
+          ),
+        );
       }
     }
   }
@@ -485,18 +530,28 @@ class _RecordPageState extends State<RecordPage> {
     } catch (e) {
       print('Error creating new match: $e');
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('새 경기 생성 중 오류가 발생했습니다: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '새 경기 생성 중 오류가 발생했습니다: $e',
+              style: TextStyle(fontFamily: 'Maple_L'),
+            ),
+          ),
+        );
       }
     }
   }
 
   bool _validatePlayersSelected() {
     if (selectedPlayer1 == null || selectedPlayer2 == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('두 플레이어를 모두 선택해주세요')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            '두 플레이어를 모두 선택해주세요',
+            style: TextStyle(fontFamily: 'Maple_L'),
+          ),
+        ),
+      );
       return false;
     }
     return true;
@@ -589,7 +644,10 @@ class _RecordPageState extends State<RecordPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(isPlayer1 ? '플레이어 1 선택' : '플레이어 2 선택'),
+          title: Text(
+            isPlayer1 ? '플레이어 1 선택' : '플레이어 2 선택',
+            style: TextStyle(fontFamily: 'Maple_L'),
+          ),
           content: SizedBox(
             width: double.maxFinite,
             child: ListView.builder(
@@ -630,7 +688,7 @@ class _RecordPageState extends State<RecordPage> {
                     (player == selectedPlayer1
                         ? _player1DefaultText
                         : _player2DefaultText),
-                style: const TextStyle(fontSize: 24),
+                style: TextStyle(fontFamily: 'Maple_L', fontSize: 24),
               ),
               Text(player?.email ?? '', style: const TextStyle(fontSize: 14)),
               const SizedBox(height: 16),
@@ -655,15 +713,29 @@ class _RecordPageState extends State<RecordPage> {
         children: [
           Expanded(
             child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+              ),
               onPressed: () => _selectPlayer(true),
-              child: Text(selectedPlayer1?.name ?? '플레이어 1 선택'),
+              child: Text(
+                selectedPlayer1?.name ?? '플레이어 1 선택',
+                style: TextStyle(fontFamily: 'Maple_L'),
+              ),
             ),
           ),
           const SizedBox(width: 8),
           Expanded(
             child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+              ),
               onPressed: () => _selectPlayer(false),
-              child: Text(selectedPlayer2?.name ?? '플레이어 2 선택'),
+              child: Text(
+                selectedPlayer2?.name ?? '플레이어 2 선택',
+                style: TextStyle(fontFamily: 'Maple_L'),
+              ),
             ),
           ),
         ],
@@ -677,7 +749,7 @@ class _RecordPageState extends State<RecordPage> {
         padding: const EdgeInsets.all(8.0),
         child: ElevatedButton(
           onPressed: _createNewMatch,
-          child: const Text('경기 시작'),
+          child: const Text('경기 시작', style: TextStyle(fontFamily: 'Maple_L')),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.green,
             foregroundColor: Colors.white,
@@ -689,7 +761,7 @@ class _RecordPageState extends State<RecordPage> {
         padding: const EdgeInsets.all(8.0),
         child: ElevatedButton(
           onPressed: _endMatch,
-          child: const Text('경기 종료'),
+          child: const Text('경기 종료', style: TextStyle(fontFamily: 'Maple_L')),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.red,
             foregroundColor: Colors.white,
@@ -703,7 +775,12 @@ class _RecordPageState extends State<RecordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('배드민턴 경기 기록'),
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text(
+          '배드민턴 경기 기록',
+          style: TextStyle(color: Colors.white, fontFamily: 'Maple_B'),
+        ),
         centerTitle: true,
         actions: [
           if (currentMatchId != null && scoreHistory.isNotEmpty)
