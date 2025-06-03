@@ -77,13 +77,51 @@ class _RecordPageState extends State<RecordPage> {
 
   void _initCurrentUser() {
     try {
-      currentUser = Get.find<BaddyUser>();
-      _initializeUserData();
+      // 안전한 방식으로 BaddyUser 확인 후 가져오기
+      if (Get.isRegistered<BaddyUser>()) {
+        currentUser = Get.find<BaddyUser>();
+        _initializeUserData();
+      } else {
+        // BaddyUser가 등록되지 않은 경우 Firebase Auth 사용자로 대체
+        _handleMissingUser();
+      }
     } catch (e) {
       print('BaddyUser를 찾을 수 없습니다: $e');
+      _handleMissingUser();
+    }
+  }
+
+  void _handleMissingUser() {
+    final user = _auth.currentUser;
+    if (user != null) {
+      _initializeFromFirebaseUser(user);
+    } else {
       _navigateBackWithError('사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요.');
     }
   }
+
+  Future<void> _initializeFromFirebaseUser(User user) async {
+    try {
+      final userDoc = await _firestore.collection('baddyusers').doc(user.email).get();
+
+      if (userDoc.exists) {
+        final userData = userDoc.data() as Map<String, dynamic>;
+        final groupId = userData['groupId'] ?? '';
+
+        if (groupId.isNotEmpty) {
+          await _loadPlayersWithGroupId(groupId);
+        } else {
+          _showGroupJoinMessage();
+        }
+      } else {
+        await _createUserDocumentWithoutCurrentUser(user);
+      }
+    } catch (e) {
+      print('Firebase 사용자 초기화 중 오류: $e');
+      _navigateBackWithError('사용자 초기화에 실패했습니다.');
+    }
+  }
+
 
   void _navigateBackWithError(String message) {
     Future.microtask(() {
@@ -123,46 +161,92 @@ class _RecordPageState extends State<RecordPage> {
   }
 
   Future<void> _ensureUserDocument(User user) async {
-    final userDoc =
-        await _firestore.collection('baddyusers').doc(user.email).get();
+    final userDoc = await _firestore.collection('baddyusers').doc(user.email).get();
 
     if (!userDoc.exists) {
-      await _firestore.collection('baddyusers').doc(user.email).set({
-        'email': user.email ?? '',
-        'name': user.displayName ?? _noNamePlaceholder,
-        'groupId': currentUser.groupId,
-        'totalGames': 0,
-        'wins': 0,
-        'winRate': '0.0',
-        'recentMatches': [],
-        'createdAt': FieldValue.serverTimestamp(),
-        'uid': user.uid,
-      });
+      await _createUserDocumentWithoutCurrentUser(user);
     }
   }
 
+  Future<void> _createUserDocumentWithoutCurrentUser(User user) async {
+    await _firestore.collection('baddyusers').doc(user.email).set({
+      'email': user.email ?? '',
+      'name': user.displayName ?? _noNamePlaceholder,
+      'groupId': '', // 초기에는 빈 값으로 설정
+      'totalGames': 0,
+      'wins': 0,
+      'winRate': '0.0',
+      'recentMatches': [],
+      'createdAt': FieldValue.serverTimestamp(),
+      'uid': user.uid,
+    });
+
+    _showGroupJoinMessage();
+  }
+
+  void _showGroupJoinMessage() {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            '그룹에 가입 후 이용해주세요.',
+            style: TextStyle(fontFamily: 'Maple_L'),
+          ),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+
   Future<void> _loadPlayers() async {
     try {
-      QuerySnapshot querySnapshot =
-          await _firestore
-              .collection('baddyusers')
-              .where('groupId', isEqualTo: currentUser.groupId)
-              .get();
-
-      if (mounted) {
-        setState(() {
-          allPlayers =
-              querySnapshot.docs
-                  .map((doc) => Player.fromFirestore(doc))
-                  .toList();
-        });
+      String? groupId = await _getCurrentUserGroupId();
+      if (groupId == null || groupId.isEmpty) {
+        print('유효한 그룹 ID가 없습니다.');
+        return;
       }
 
-      print('로드된 플레이어 수: ${allPlayers.length}');
+      await _loadPlayersWithGroupId(groupId);
     } catch (e) {
       print('플레이어 로딩 중 오류 발생: $e');
     }
   }
+
+  Future<void> _loadPlayersWithGroupId(String groupId) async {
+    QuerySnapshot querySnapshot = await _firestore
+        .collection('baddyusers')
+        .where('groupId', isEqualTo: groupId)
+        .get();
+
+    if (mounted) {
+      setState(() {
+        allPlayers = querySnapshot.docs
+            .map((doc) => Player.fromFirestore(doc))
+            .where((player) => player.name != _noNamePlaceholder)
+            .toList();
+      });
+    }
+
+    print('로드된 플레이어 수: ${allPlayers.length}');
+  }
+
+  Future<String?> _getCurrentUserGroupId() async {
+    final user = _auth.currentUser;
+    if (user == null) return null;
+
+    try {
+      final userDoc = await _firestore.collection('baddyusers').doc(user.email).get();
+      if (userDoc.exists) {
+        final userData = userDoc.data() as Map<String, dynamic>;
+        return userData['groupId']?.toString();
+      }
+    } catch (e) {
+      print('그룹 ID 조회 실패: $e');
+    }
+    return null;
+  }
+
 
   // 점수 관련 메서드
   void _incrementScore(int playerNumber) {
@@ -465,10 +549,12 @@ class _RecordPageState extends State<RecordPage> {
                 ? "vs $opponentName 무승부 ($player1Score-$player2Score)"
                 : "vs $opponentName ${isWinner ? "승리" : "패배"} ($player1Score-$player2Score)";
 
-        if (recentMatches.length >= 5) {
-          recentMatches.removeAt(0);
+        //최근경기 맨앞에 추가
+        recentMatches.insert(0, matchResult);
+
+        if (recentMatches.length > 5) {
+          recentMatches.removeLast();
         }
-        recentMatches.add(matchResult);
 
         transaction.update(playerRef, {
           'totalGames': totalGames,

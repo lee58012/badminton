@@ -16,6 +16,7 @@ class _MapPageState extends State<MapPage> {
   List<Map<String, dynamic>> _gymList = [];
   List<Marker> _gymMarkers = [];
 
+
   // 권한 확인 메서드
   Future<bool> _checkLocationPermission() async {
     LocationPermission permission = await Geolocator.checkPermission();
